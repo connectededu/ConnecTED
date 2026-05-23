@@ -1,0 +1,302 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Base colors */
+    --background: 220 20% 97%;
+    --foreground: 220 20% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 10%;
+
+    /* Primary - Neutral Dark for general UI */
+    --primary: 220 20% 20%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 15% 94%;
+    --secondary-foreground: 220 20% 20%;
+
+    --muted: 220 15% 92%;
+    --muted-foreground: 220 10% 45%;
+
+    --accent: 220 15% 90%;
+    --accent-foreground: 220 20% 20%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 88%;
+    --input: 220 15% 88%;
+    --ring: 220 20% 20%;
+
+    --radius: 0.75rem;
+
+    /* Role Colors - HSL values */
+    --parent: 217 91% 60%;
+    --parent-light: 217 91% 95%;
+    --parent-dark: 217 91% 45%;
+    --parent-foreground: 0 0% 100%;
+
+    --teacher: 142 71% 45%;
+    --teacher-light: 142 71% 95%;
+    --teacher-dark: 142 71% 35%;
+    --teacher-foreground: 0 0% 100%;
+
+    --admin: 25 95% 53%;
+    --admin-light: 25 95% 95%;
+    --admin-dark: 25 95% 43%;
+    --admin-foreground: 0 0% 100%;
+
+    /* Glass effects */
+    --glass-bg: 0 0% 100% / 0.7;
+    --glass-border: 0 0% 100% / 0.3;
+    --glass-shadow: 220 20% 10% / 0.1;
+
+    /* Gradients */
+    --gradient-parent: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(230 80% 65%) 100%);
+    --gradient-teacher: linear-gradient(135deg, hsl(142 71% 45%) 0%, hsl(160 60% 50%) 100%);
+    --gradient-admin: linear-gradient(135deg, hsl(25 95% 53%) 0%, hsl(35 90% 55%) 100%);
+    --gradient-auth: linear-gradient(135deg, hsl(220 60% 50%) 0%, hsl(280 60% 55%) 50%, hsl(330 70% 55%) 100%);
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 20% 30%;
+    --sidebar-primary: 220 20% 20%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 94%;
+    --sidebar-accent-foreground: 220 20% 20%;
+    --sidebar-border: 220 15% 90%;
+    --sidebar-ring: 217 91% 60%;
+
+    /* Status colors */
+    --success: 142 71% 45%;
+    --warning: 38 92% 50%;
+    --info: 217 91% 60%;
+    --error: 0 72% 51%;
+
+     /* Custom tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(152 60% 36%) 0%, hsl(160 70% 40%) 50%, hsl(168 75% 35%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(140 30% 97%) 0%, hsl(145 25% 94%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(145 30% 98%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(160 70% 40%) 0%, hsl(152 60% 36%) 100%);
+  }
+
+  .dark {
+    --background: 220 20% 8%;
+    --foreground: 220 15% 95%;
+
+    --card: 220 20% 12%;
+    --card-foreground: 220 15% 95%;
+
+    --popover: 220 20% 12%;
+    --popover-foreground: 220 15% 95%;
+
+    --primary: 220 15% 95%;
+    --primary-foreground: 220 20% 10%;
+
+    --secondary: 220 20% 18%;
+    --secondary-foreground: 220 15% 95%;
+
+    --muted: 220 20% 18%;
+    --muted-foreground: 220 15% 60%;
+
+    --accent: 220 20% 20%;
+    --accent-foreground: 220 15% 95%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 20% 20%;
+    --input: 220 20% 20%;
+    --ring: 220 15% 80%;
+
+    --glass-bg: 220 20% 12% / 0.8;
+    --glass-border: 0 0% 100% / 0.1;
+    --glass-shadow: 0 0% 0% / 0.3;
+
+    --sidebar-background: 220 20% 10%;
+    --sidebar-foreground: 220 15% 85%;
+    --sidebar-primary: 220 15% 95%;
+    --sidebar-primary-foreground: 220 20% 10%;
+    --sidebar-accent: 220 20% 16%;
+    --sidebar-accent-foreground: 220 15% 95%;
+    --sidebar-border: 220 20% 18%;
+    --sidebar-ring: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  /* Glass card effect */
+  .glass-card {
+    @apply backdrop-blur-xl border shadow-lg;
+    background: hsl(var(--glass-bg));
+    border-color: hsl(var(--glass-border));
+    box-shadow: 0 8px 32px hsl(var(--glass-shadow));
+  }
+
+  .glass-card-strong {
+    @apply backdrop-blur-2xl border shadow-xl;
+    background: hsl(0 0% 100% / 0.85);
+    border-color: hsl(var(--glass-border));
+    box-shadow: 0 12px 40px hsl(var(--glass-shadow));
+  }
+
+  /* Role-specific backgrounds */
+  .bg-role-parent {
+    background: var(--gradient-parent);
+  }
+
+  .bg-role-teacher {
+    background: var(--gradient-teacher);
+  }
+
+  .bg-role-admin {
+    background: var(--gradient-admin);
+  }
+
+  /* Role badges */
+  .badge-parent {
+    @apply text-xs font-semibold px-3 py-1 rounded-full;
+    background: hsl(var(--parent-light));
+    color: hsl(var(--parent-dark));
+  }
+
+  .badge-teacher {
+    @apply text-xs font-semibold px-3 py-1 rounded-full;
+    background: hsl(var(--teacher-light));
+    color: hsl(var(--teacher-dark));
+  }
+
+  .badge-admin {
+    @apply text-xs font-semibold px-3 py-1 rounded-full;
+    background: hsl(var(--admin-light));
+    color: hsl(var(--admin-dark));
+  }
+
+  /* Animated gradient background */
+  .animated-gradient {
+    background: linear-gradient(-45deg, 
+      hsl(217 91% 60%), 
+      hsl(230 80% 65%), 
+      hsl(280 70% 60%), 
+      hsl(330 70% 55%),
+      hsl(217 91% 60%)
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  /* Notification badge pulse */
+  .notification-pulse {
+    @apply relative;
+  }
+
+  .notification-pulse::after {
+    content: '';
+    @apply absolute -top-1 -right-1 w-3 h-3 rounded-full;
+    background: hsl(var(--destructive));
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+  }
+
+  /* Skeleton loading */
+  .skeleton-shimmer {
+    @apply relative overflow-hidden;
+    background: hsl(var(--muted));
+  }
+
+  .skeleton-shimmer::after {
+    content: '';
+    @apply absolute inset-0;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      hsl(0 0% 100% / 0.4) 50%, 
+      transparent 100%
+    );
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Smooth scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply rounded-full;
+    background: hsl(var(--muted-foreground) / 0.3);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+}
+
+@layer utilities {
+  /* Text gradients */
+  .text-gradient-parent {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-parent);
+  }
+
+  .text-gradient-teacher {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-teacher);
+  }
+
+  .text-gradient-admin {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-admin);
+  }
+
+  /* Focus ring with role colors */
+  .focus-ring-parent:focus-visible {
+    @apply outline-none ring-2 ring-offset-2;
+    --tw-ring-color: hsl(var(--parent));
+  }
+
+  .focus-ring-teacher:focus-visible {
+    @apply outline-none ring-2 ring-offset-2;
+    --tw-ring-color: hsl(var(--teacher));
+  }
+
+  .focus-ring-admin:focus-visible {
+    @apply outline-none ring-2 ring-offset-2;
+    --tw-ring-color: hsl(var(--admin));
+  }
+}
