@@ -34,7 +34,7 @@ import {
 import { useAuthStore } from '@/stores/authStore'
 import { useAppStore } from '@/stores/appStore'
 import { toast } from 'sonner'
-import type { Teacher } from '@/types'
+import type { Teacher, Announcement } from '@/types'
 
 const updateSchema = z.object({
 	title: z.string().min(3, 'Title must be at least 3 characters'),
@@ -75,16 +75,14 @@ export default function UpdatesPage() {
 	})
 
 	// Filter items matching current teacher
-	const myClasses = classes.filter(
-		(c) =>
-			c.teacherIds?.includes(teacher?.id) ||
-			c.teacherIds?.includes((teacher as any)?._id)
+	const myClasses = classes.filter((c) =>
+		c.teacherIds?.includes(teacher?.id)
 	)
 
 	const myStudents = students.filter((s) => s.classId === selectedClassId)
 
 	const myUpdates = announcements.filter(
-		(a) => a.authorId === teacher?.id || a.authorId === (teacher as any)?._id
+		(a) => a.authorId === teacher?.id
 	)
 
 	const onSubmit = async (data: UpdateFormValues) => {
@@ -128,8 +126,8 @@ export default function UpdatesPage() {
 		}
 	}
 
-	const handleEdit = (update: any) => {
-		setEditingId(update.id || update._id)
+	const handleEdit = (update: Announcement) => {
+		setEditingId(update.id)
 
 		// Check if title has prefix
 		let cleanTitle = update.title
@@ -239,8 +237,8 @@ export default function UpdatesPage() {
 												<SelectContent>
 													{myClasses.map((cls) => (
 														<SelectItem
-															key={cls.id || cls._id}
-															value={cls.id || cls._id}
+															key={cls.id}
+															value={cls.id}
 														>
 															{cls.name}
 														</SelectItem>
@@ -332,8 +330,8 @@ export default function UpdatesPage() {
 													<SelectContent>
 														{myStudents.map((s) => (
 															<SelectItem
-																key={s.id || s._id}
-																value={s.id || s._id}
+																key={s.id}
+																value={s.id}
 															>
 																{s.name}
 															</SelectItem>
@@ -420,7 +418,7 @@ export default function UpdatesPage() {
 						</div>
 					) : (
 						myUpdates.map((update) => (
-							<Card key={update.id || update._id}>
+							<Card key={update.id}>
 								<CardHeader className='pb-3'>
 									<div className='flex justify-between items-start'>
 										<div className='space-y-1'>
@@ -456,7 +454,7 @@ export default function UpdatesPage() {
 										variant='ghost'
 										size='sm'
 										className='text-destructive hover:text-destructive'
-										onClick={() => handleDelete(update.id || update._id)}
+										onClick={() => handleDelete(update.id)}
 									>
 										<Trash2 className='h-4 w-4 mr-1' /> Delete
 									</Button>
