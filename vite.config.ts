@@ -10,7 +10,8 @@ export default defineConfig(({ mode }) => ({
 		port: 8080,
 		hmr: {
 			overlay: false
-		}
+		},
+		historyApiFallback: true
 	},
 	plugins: [react(), mode === 'development' && componentTagger()].filter(
 		Boolean
