@@ -32,6 +32,7 @@ export default function AttendancePage() {
   
   // Staging attendance changes locally { studentId: status }
   const [attendanceState, setAttendanceState] = useState<Record<string, 'present' | 'absent' | 'late' | 'excused'>>({});
+  const [initialState, setInitialState] = useState<Record<string, 'present' | 'absent' | 'late' | 'excused'>>({});
 
   const myClasses = classes.filter(
     (c) => c.teacherIds?.includes(teacher?.id) || c.teacherIds?.includes((teacher as any)?._id)
@@ -52,10 +53,14 @@ export default function AttendancePage() {
         initial[student.id] = existing?.status || 'present';
       });
       setAttendanceState(initial);
+      setInitialState(initial);
     } else {
       setAttendanceState({});
+      setInitialState({});
     }
   }, [selectedClassId, formattedDate, attendance]);
+
+  const hasChanges = Object.keys(attendanceState).some(studentId => attendanceState[studentId] !== initialState[studentId]) || Object.keys(initialState).some(studentId => attendanceState[studentId] !== initialState[studentId]);
 
   const getStatus = (studentId: string) => {
     return attendanceState[studentId] || 'present';
@@ -93,7 +98,7 @@ export default function AttendancePage() {
             Mark daily attendance for your classes.
           </p>
         </div>
-        <Button onClick={handleSubmit} disabled={isLoading || !selectedClassId}>
+        <Button onClick={handleSubmit} disabled={isLoading || !selectedClassId || !hasChanges}>
           {isLoading ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (

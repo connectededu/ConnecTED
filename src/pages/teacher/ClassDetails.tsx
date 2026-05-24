@@ -18,10 +18,31 @@ import { useAppStore } from '@/stores/appStore';
 export default function ClassDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { classes, students, isLoading } = useAppStore();
+  const { classes, students, attendance, grades, isLoading } = useAppStore();
 
   const classData = classes.find((c) => c.id === id || (c as any)._id === id);
   const classStudents = students.filter((s) => s.classId === id || s.classId === (classData as any)?._id);
+
+  const classAttendance = attendance.filter(a => classStudents.some(s => s.id === a.studentId || (s as any)._id === a.studentId));
+  const totalAttendanceRecords = classAttendance.length;
+  const presentRecords = classAttendance.filter(a => a.status === 'present' || a.status === 'late').length;
+  const attendancePercentage = totalAttendanceRecords > 0 
+    ? Math.round((presentRecords / totalAttendanceRecords) * 100) 
+    : 0;
+
+  const classGrades = grades.filter(g => classStudents.some(s => s.id === g.studentId || (s as any)._id === g.studentId));
+  const totalScore = classGrades.reduce((sum, g) => sum + (g.score / g.maxScore) * 100, 0);
+  const averageScore = classGrades.length > 0 ? totalScore / classGrades.length : 0;
+  
+  const getLetterGrade = (score: number) => {
+    if (classGrades.length === 0) return 'N/A';
+    if (score >= 90) return 'A';
+    if (score >= 80) return 'B';
+    if (score >= 70) return 'C';
+    if (score >= 60) return 'D';
+    return 'F';
+  };
+  const letterGrade = getLetterGrade(averageScore);
 
   if (isLoading) {
     return (
@@ -80,7 +101,7 @@ export default function ClassDetailsPage() {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">95%</div>
+            <div className="text-2xl font-bold">{totalAttendanceRecords > 0 ? `${attendancePercentage}%` : 'N/A'}</div>
             <p className="text-xs text-muted-foreground">Term average</p>
           </CardContent>
         </Card>
@@ -90,7 +111,7 @@ export default function ClassDetailsPage() {
             <GraduationCap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">A-</div>
+            <div className="text-2xl font-bold">{letterGrade}</div>
             <p className="text-xs text-muted-foreground">Performance average</p>
           </CardContent>
         </Card>

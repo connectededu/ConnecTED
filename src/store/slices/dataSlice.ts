@@ -362,7 +362,10 @@ const dataSlice = createSlice({
         state.homework.push(action.payload)
       })
       .addCase(addAnnouncementThunk.fulfilled, (state, action) => {
-        state.announcements.unshift(action.payload)
+        const exists = state.announcements.some(a => a.id === action.payload.id || a._id === action.payload._id);
+        if (!exists) {
+          state.announcements.unshift(action.payload)
+        }
       })
       .addCase(updateAnnouncementThunk.fulfilled, (state, action) => {
         const idx = state.announcements.findIndex(a => a.id === action.payload.id || a._id === action.payload._id)

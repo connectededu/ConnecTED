@@ -213,25 +213,32 @@ export default function MessagesPage() {
   // ─── Fix Msg1: build a lookup map for participant names ───
   const participantNameMap = useMemo(() => {
     const map: Record<string, string> = {};
-    const initialOnline = new Set<string>();
     (teachers as any[]).forEach((t) => {
       if (t.id) map[t.id] = t.name;
       if (t._id) map[t._id] = t.name;
       if (t.uid) map[t.uid] = t.name;
       if (t.firebaseUid) map[t.firebaseUid] = t.name;
-      if (t.isOnline) initialOnline.add(t.id || t._id || t.uid || t.firebaseUid);
     });
     (parents as any[]).forEach((p) => {
       if (p.id) map[p.id] = p.name;
       if (p._id) map[p._id] = p.name;
       if (p.uid) map[p.uid] = p.name;
       if (p.firebaseUid) map[p.firebaseUid] = p.name;
+    });
+    return map;
+  }, [teachers, parents]);
+
+  useEffect(() => {
+    const initialOnline = new Set<string>();
+    (teachers as any[]).forEach((t) => {
+      if (t.isOnline) initialOnline.add(t.id || t._id || t.uid || t.firebaseUid);
+    });
+    (parents as any[]).forEach((p) => {
       if (p.isOnline) initialOnline.add(p.id || p._id || p.uid || p.firebaseUid);
     });
     if (initialOnline.size > 0) {
       setOnlineUsers(prev => new Set([...prev, ...initialOnline]));
     }
-    return map;
   }, [teachers, parents]);
 
   const getParticipantId = (thread: any): string => {
@@ -449,6 +456,20 @@ export default function MessagesPage() {
                               <span className="w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-xs flex items-center justify-center flex-shrink-0">
                                 {thread.unreadCount}
                               </span>
+                            )}
+                            {!(thread.unreadCount > 0 && !isSelected) && thread.lastMessage && (thread.lastMessage as any).timestamp && !isNaN(new Date((thread.lastMessage as any).timestamp).getTime()) && (
+                              <p
+                                className={`text-xs ${
+                                  isSelected
+                                    ? 'opacity-70'
+                                    : 'text-muted-foreground'
+                                }`}
+                              >
+                                {formatDistanceToNow(
+                                  new Date((thread.lastMessage as any).timestamp),
+                                  { addSuffix: true }
+                                )}
+                              </p>
                             )}
                           </div>
                         </button>

@@ -11,7 +11,13 @@ import { Badge } from '@/components/ui/badge';
 import { useAuthStore } from '@/stores/authStore';
 import { useAppStore } from '@/stores/appStore';
 import { toast } from 'sonner';
-import { Save, Loader2 } from 'lucide-react';
+import { Save, Loader2, MessageSquare } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Textarea } from '@/components/ui/textarea';
 import type { Teacher } from '@/types';
 
 export default function GradesPage() {
@@ -23,6 +29,9 @@ export default function GradesPage() {
   const [selectedSubject, setSelectedSubject] = useState<string>('');
   const [selectedTerm, setSelectedTerm] = useState<string>('Term 1');
   const [editedGrades, setEditedGrades] = useState<Record<string, number>>({});
+  const [gradeComments, setGradeComments] = useState<Record<string, string>>({});
+  const [initialGrades, setInitialGrades] = useState<Record<string, number>>({});
+  const [initialComments, setInitialComments] = useState<Record<string, string>>({});
 
   const myClasses = classes.filter(
     (c) => c.teacherIds?.includes(teacher?.id) || c.teacherIds?.includes((teacher as any)?._id)
@@ -34,6 +43,7 @@ export default function GradesPage() {
   useEffect(() => {
     if (selectedClassId && selectedSubject && selectedTerm) {
       const initial: Record<string, number> = {};
+      const initialComms: Record<string, string> = {};
       classStudents.forEach(student => {
         const existingGrade = grades.find(
           g => g.studentId === student.id && 
@@ -43,13 +53,26 @@ export default function GradesPage() {
         );
         if (existingGrade) {
           initial[student.id] = existingGrade.score;
+          if (existingGrade.comments) {
+            initialComms[student.id] = existingGrade.comments;
+          }
         }
       });
+      setInitialGrades(initial);
       setEditedGrades(initial);
+      setInitialComments(initialComms);
+      setGradeComments(initialComms);
     } else {
+      setInitialGrades({});
       setEditedGrades({});
+      setInitialComments({});
+      setGradeComments({});
     }
   }, [selectedClassId, selectedSubject, selectedTerm, grades]);
+
+  const hasChanges = Object.keys(editedGrades).some(studentId => editedGrades[studentId] !== initialGrades[studentId]) || 
+                     Object.keys(gradeComments).some(studentId => gradeComments[studentId] !== initialComments[studentId]) ||
+                     Object.keys(initialGrades).some(studentId => editedGrades[studentId] !== initialGrades[studentId]);
 
   const handleSaveAll = async () => {
     if (!teacher || !selectedClassId || !selectedSubject) return;
@@ -64,6 +87,7 @@ export default function GradesPage() {
           score,
           maxScore: 100,
           teacherId: teacher.id,
+          comments: gradeComments[studentId] || '',
         });
       });
 
@@ -85,7 +109,7 @@ export default function GradesPage() {
             Manage and publish student grades.
           </p>
         </div>
-        <Button onClick={handleSaveAll} disabled={isLoading}>
+        <Button onClick={handleSaveAll} disabled={isLoading || !hasChanges}>
           {isLoading ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
@@ -216,7 +240,30 @@ export default function GradesPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="sm">Add Comment</Button>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="ghost" size="sm" className={gradeComments[student.id] ? "text-primary" : "text-muted-foreground"}>
+                            <MessageSquare className="h-4 w-4 mr-2" />
+                            {gradeComments[student.id] ? "Edit Comment" : "Add Comment"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80">
+                          <div className="grid gap-4">
+                            <div className="space-y-2">
+                              <h4 className="font-medium leading-none">Feedback</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Add comments for {student.name}'s grade.
+                              </p>
+                            </div>
+                            <Textarea
+                              value={gradeComments[student.id] || ''}
+                              onChange={(e) => setGradeComments(prev => ({ ...prev, [student.id]: e.target.value }))}
+                              placeholder="Great improvement this term..."
+                              className="min-h-[100px]"
+                            />
+                          </div>
+                        </PopoverContent>
+                      </Popover>
                     </TableCell>
                   </TableRow>
                 );
