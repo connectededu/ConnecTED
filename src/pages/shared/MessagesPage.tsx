@@ -349,9 +349,15 @@ export default function MessagesPage() {
   const currentMessages = messages.filter(
     (m) => {
       if (!currentThread) return false;
-      return m.threadId === currentThread.id || m.threadId === (currentThread as any)._id;
+      const match = m.threadId === currentThread.id || m.threadId === (currentThread as any)._id;
+      if (!match) {
+        console.log(`⚠️ Message threadId mismatch: msg.threadId=${m.threadId}, thread.id=${currentThread.id}, thread._id=${(currentThread as any)._id}`);
+      }
+      return match;
     }
   );
+  console.log('📊 Current thread:', currentThread ? `${currentThread.id || (currentThread as any)._id}` : 'NONE');
+  console.log('📊 Total messages:', messages.length, 'Filtered:', currentMessages.length);
 
   return (
     <div className="h-[calc(100vh-10rem)] lg:h-[calc(100vh-6rem)] flex flex-col">

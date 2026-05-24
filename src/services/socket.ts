@@ -13,19 +13,21 @@ const eventListeners = new Map<string, Set<(...args: any[]) => void>>();
  */
 export const initializeSocket = async (): Promise<Socket | null> => {
   if (socket?.connected) {
+    console.log('✅ Socket already connected');
     return socket;
   }
 
   try {
     const token = await getIdToken();
-    
+
     if (!token) {
-      console.warn('No auth token available for socket connection');
+      console.warn('⚠️ No auth token available for socket connection');
       return null;
     }
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     const socketUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
 
+    console.log('🔌 Initializing socket connection to:', socketUrl);
     socket = io(socketUrl, {
       auth: { token },
       transports: ['websocket', 'polling'],
@@ -37,33 +39,34 @@ export const initializeSocket = async (): Promise<Socket | null> => {
 
     // Connection events
     socket.on('connect', () => {
-      console.log('Socket connected');
+      console.log('✅ Socket connected, ID:', socket?.id);
       reconnectAttempts = 0;
-      
+
       // Re-register all event listeners
       eventListeners.forEach((listeners, event) => {
         listeners.forEach((callback) => {
           socket?.on(event, callback);
+          console.log(`✅ Re-registered listener for: ${event}`);
         });
       });
     });
 
     socket.on('disconnect', (reason) => {
-      console.log('Socket disconnected:', reason);
+      console.log('❌ Socket disconnected:', reason);
     });
 
     socket.on('connect_error', (error) => {
-      console.error('Socket connection error:', error.message);
+      console.error('❌ Socket connection error:', error.message);
       reconnectAttempts++;
-      
+
       if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-        console.error('Max reconnection attempts reached');
+        console.error('❌ Max reconnection attempts reached');
       }
     });
 
     return socket;
   } catch (error) {
-    console.error('Failed to initialize socket:', error);
+    console.error('❌ Failed to initialize socket:', error);
     return null;
   }
 };
@@ -93,6 +96,7 @@ export const isConnected = (): boolean => socket?.connected ?? false;
  * Subscribe to a socket event
  */
 export const on = (event: string, callback: (...args: any[]) => void): void => {
+  console.log(`🔗 Registering socket listener for: ${event}`);
   // Store in registry for reconnection
   if (!eventListeners.has(event)) {
     eventListeners.set(event, new Set());
@@ -102,6 +106,9 @@ export const on = (event: string, callback: (...args: any[]) => void): void => {
   // Add to socket if connected
   if (socket) {
     socket.on(event, callback);
+    console.log(`✅ Socket listener active for: ${event}`);
+  } else {
+    console.warn(`⚠️ Socket not connected yet, listener will be added on reconnection: ${event}`);
   }
 };
 

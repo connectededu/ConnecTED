@@ -138,7 +138,9 @@ export default function DashboardLayout() {
 
 
 			const handleIncomingMessage = (data: any) => {
+				console.log('📨 Incoming message event:', data);
 				if (data && data.message) {
+					console.log('✅ Processing message:', data.message);
 					receiveMessage(data.message)
 				}
 			}

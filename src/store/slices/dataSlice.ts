@@ -128,7 +128,9 @@ export const fetchAnalytics = createAsyncThunk('data/fetchAnalytics', async () =
 export const sendMessageThunk = createAsyncThunk(
   'data/sendMessage',
   async ({ threadId, content, attachments }: { threadId: string; content: string; attachments?: any[] }) => {
+    console.log('📤 Sending message:', { threadId, content });
     const res = await messagesApi.sendMessage(threadId, content, attachments)
+    console.log('✅ Message sent, response:', res.data);
     return res.data
   }
 )
@@ -236,16 +238,22 @@ const dataSlice = createSlice({
   reducers: {
     // Socket listener actions to update state in real-time
     receiveMessage(state, action: PayloadAction<Message>) {
+      console.log('📬 receiveMessage reducer called with:', action.payload);
       // Avoid duplicate messages
       const exists = state.messages.some(m => m.id === action.payload.id || m._id === action.payload._id);
       if (!exists) {
+        console.log('✅ Adding new message to state');
         state.messages.push(action.payload);
+      } else {
+        console.log('⚠️ Message already exists, skipping');
       }
       // Update thread's last message and unread count
       const thread = state.messageThreads.find(t => t.id === action.payload.threadId || (t as any)._id === action.payload.threadId);
+      console.log('🔍 Found thread:', thread ? `${thread.id || (thread as any)._id}` : 'NOT FOUND');
       if (thread) {
         thread.lastMessage = action.payload;
         thread.unreadCount = (thread.unreadCount || 0) + 1;
+        console.log('✅ Updated thread, unreadCount:', thread.unreadCount);
       }
     },
     receiveNotification(state, action: PayloadAction<Notification>) {
