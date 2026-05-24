@@ -95,26 +95,30 @@ export default function ClassDetailsPage() {
             <div className="text-2xl font-bold">{classStudents.length}</div>
           </CardContent>
         </Card>
-         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Attendance</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalAttendanceRecords > 0 ? `${attendancePercentage}%` : 'N/A'}</div>
-            <p className="text-xs text-muted-foreground">Term average</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Class Average</CardTitle>
-            <GraduationCap className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{letterGrade}</div>
-            <p className="text-xs text-muted-foreground">Performance average</p>
-          </CardContent>
-        </Card>
+        {totalAttendanceRecords > 0 && (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Average Attendance</CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{attendancePercentage}%</div>
+              <p className="text-xs text-muted-foreground">Term average</p>
+            </CardContent>
+          </Card>
+        )}
+        {classGrades.length > 0 && (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Class Average</CardTitle>
+              <GraduationCap className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{letterGrade}</div>
+              <p className="text-xs text-muted-foreground">Performance average</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <Card>

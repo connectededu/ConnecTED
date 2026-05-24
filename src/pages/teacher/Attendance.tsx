@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { 
-  Check, X, Clock, Calendar as CalendarIcon, Save, Loader2
+  Check, X, Clock, Calendar as CalendarIcon, Save, Loader2, MessageSquare
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -25,7 +26,7 @@ import type { Teacher } from '@/types';
 export default function AttendancePage() {
   const { user } = useAuthStore();
   const teacher = user as Teacher;
-  const { classes, students, attendance, markAttendanceBulk, isLoading } = useAppStore();
+  const { classes, students, attendance, fetchAttendance, markAttendanceBulk, isLoading } = useAppStore();
   
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   const [date, setDate] = useState<Date>(new Date());
@@ -33,6 +34,8 @@ export default function AttendancePage() {
   // Staging attendance changes locally { studentId: status }
   const [attendanceState, setAttendanceState] = useState<Record<string, 'present' | 'absent' | 'late' | 'excused'>>({});
   const [initialState, setInitialState] = useState<Record<string, 'present' | 'absent' | 'late' | 'excused'>>({});
+  const [attendanceNotes, setAttendanceNotes] = useState<Record<string, string>>({});
+  const [initialNotes, setInitialNotes] = useState<Record<string, string>>({});
 
   const myClasses = classes.filter(
     (c) => c.teacherIds?.includes(teacher?.id) || c.teacherIds?.includes((teacher as any)?._id)
@@ -42,25 +45,49 @@ export default function AttendancePage() {
 
   const formattedDate = format(date, 'yyyy-MM-dd');
 
+  // Fetch attendance from server when class or date changes
+  useEffect(() => {
+    if (selectedClassId && formattedDate) {
+      fetchAttendance({ classId: selectedClassId, date: formattedDate }).catch((err) => {
+        console.error('Failed to fetch attendance:', err);
+      });
+    }
+  }, [selectedClassId, formattedDate]);
+
   // Load existing attendance into state
   useEffect(() => {
     if (selectedClassId && formattedDate) {
       const initial: Record<string, 'present' | 'absent' | 'late' | 'excused'> = {};
+      const initialNts: Record<string, string> = {};
       classStudents.forEach(student => {
         const existing = attendance.find(
           a => a.studentId === student.id && a.classId === selectedClassId && a.date === formattedDate
         );
         initial[student.id] = existing?.status || 'present';
+        initialNts[student.id] = existing?.note || '';
       });
       setAttendanceState(initial);
       setInitialState(initial);
+      setAttendanceNotes(initialNts);
+      setInitialNotes(initialNts);
     } else {
       setAttendanceState({});
       setInitialState({});
+      setAttendanceNotes({});
+      setInitialNotes({});
     }
   }, [selectedClassId, formattedDate, attendance]);
 
-  const hasChanges = Object.keys(attendanceState).some(studentId => attendanceState[studentId] !== initialState[studentId]) || Object.keys(initialState).some(studentId => attendanceState[studentId] !== initialState[studentId]);
+  // Check if attendance has been saved at all in the database for these students
+  const hasSavedRecords = classStudents.length > 0 && classStudents.every(student => 
+    attendance.some(a => a.studentId === student.id && a.classId === selectedClassId && a.date === formattedDate)
+  );
+
+  const hasChanges = !hasSavedRecords || 
+                     Object.keys(attendanceState).some(studentId => attendanceState[studentId] !== initialState[studentId]) || 
+                     Object.keys(initialState).some(studentId => attendanceState[studentId] !== initialState[studentId]) ||
+                     Object.keys(attendanceNotes).some(studentId => attendanceNotes[studentId] !== initialNotes[studentId]) ||
+                     Object.keys(initialNotes).some(studentId => attendanceNotes[studentId] !== initialNotes[studentId]);
 
   const getStatus = (studentId: string) => {
     return attendanceState[studentId] || 'present';
@@ -78,6 +105,7 @@ export default function AttendancePage() {
       classId: selectedClassId,
       date: formattedDate,
       status: getStatus(student.id),
+      note: attendanceNotes[student.id] || '',
       markedBy: teacher.id
     }));
 
@@ -173,7 +201,7 @@ export default function AttendancePage() {
                     </div>
                   </div>
                   
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <Button 
                       size="sm" 
                       variant={status === 'present' ? 'default' : 'outline'}
@@ -198,6 +226,31 @@ export default function AttendancePage() {
                     >
                       <X className="mr-2 h-4 w-4" /> Absent
                     </Button>
+
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="ghost" size="sm" className={attendanceNotes[student.id] ? "text-primary" : "text-muted-foreground"}>
+                          <MessageSquare className="h-4 w-4 mr-2" />
+                          {attendanceNotes[student.id] ? "Edit Comment" : "Add Comment"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80">
+                        <div className="grid gap-4">
+                          <div className="space-y-2">
+                            <h4 className="font-medium leading-none">Feedback</h4>
+                            <p className="text-sm text-muted-foreground">
+                              Add comments/notes for {student.name}'s attendance.
+                            </p>
+                          </div>
+                          <Textarea
+                            value={attendanceNotes[student.id] || ''}
+                            onChange={(e) => setAttendanceNotes(prev => ({ ...prev, [student.id]: e.target.value }))}
+                            placeholder="e.g., Sick leave, family trip..."
+                            className="min-h-[100px]"
+                          />
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </CardContent>
               </Card>

@@ -155,21 +155,16 @@ export default function DashboardLayout() {
 			}
 
 			// Listen to socket service
-			const socket = socketService.getSocket()
-			if (socket) {
-				socket.on('receive_message', handleIncomingMessage)
-				socket.on('notification', handleIncomingNotification)
-				socket.on('new_announcement', handleIncomingAnnouncement)
-				socket.on('new_event', handleIncomingEvent)
-			}
+			socketService.on('receive_message', handleIncomingMessage)
+			socketService.on('notification', handleIncomingNotification)
+			socketService.on('new_announcement', handleIncomingAnnouncement)
+			socketService.on('new_event', handleIncomingEvent)
 
 			return () => {
-				if (socket) {
-					socket.off('receive_message', handleIncomingMessage)
-					socket.off('notification', handleIncomingNotification)
-					socket.off('new_announcement', handleIncomingAnnouncement)
-					socket.off('new_event', handleIncomingEvent)
-				}
+				socketService.off('receive_message', handleIncomingMessage)
+				socketService.off('notification', handleIncomingNotification)
+				socketService.off('new_announcement', handleIncomingAnnouncement)
+				socketService.off('new_event', handleIncomingEvent)
 			}
 		}
 	}, [user?.id])

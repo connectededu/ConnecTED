@@ -23,7 +23,7 @@ import type { Teacher } from '@/types';
 export default function GradesPage() {
   const { user } = useAuthStore();
   const teacher = user as Teacher; 
-  const { classes, students, grades, addGrade, isLoading } = useAppStore();
+  const { classes, students, grades, fetchGrades, addGrade, isLoading } = useAppStore();
   
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   const [selectedSubject, setSelectedSubject] = useState<string>('');
@@ -38,6 +38,19 @@ export default function GradesPage() {
   );
 
   const classStudents = students.filter(s => s.classId === selectedClassId);
+
+  // Fetch grades from server when filters change
+  useEffect(() => {
+    if (selectedClassId && selectedSubject && selectedTerm) {
+      fetchGrades({
+        classId: selectedClassId,
+        subject: selectedSubject,
+        term: selectedTerm,
+      }).catch((err) => {
+        console.error('Failed to fetch grades:', err);
+      });
+    }
+  }, [selectedClassId, selectedSubject, selectedTerm]);
 
   // Initialize editedGrades with values from the Redux store when selection changes
   useEffect(() => {
