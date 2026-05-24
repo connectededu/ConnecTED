@@ -2,8 +2,10 @@ import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { 
   Users, GraduationCap, BookOpen, UserCheck, Calendar, 
-  TrendingUp, AlertCircle, Building, BarChart3, Loader2
+  TrendingUp, AlertCircle, Building, BarChart3, Loader2,
+  ClipboardList, Star, Megaphone, FileText, Shield, Settings
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -14,6 +16,23 @@ import { usersApi } from '@/services/api';
 import type { Admin } from '@/types';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+
+const ACTIVITY_ICON_MAP: Record<string, { icon: LucideIcon; color: string }> = {
+  grade:         { icon: Star,          color: 'text-yellow-500' },
+  attendance:    { icon: ClipboardList, color: 'text-green-500' },
+  user:          { icon: UserCheck,     color: 'text-blue-500' },
+  student:       { icon: GraduationCap, color: 'text-purple-500' },
+  class:         { icon: BookOpen,      color: 'text-indigo-500' },
+  announcement:  { icon: Megaphone,     color: 'text-orange-500' },
+  event:         { icon: Calendar,      color: 'text-pink-500' },
+  homework:      { icon: FileText,      color: 'text-cyan-500' },
+  program:       { icon: Building,      color: 'text-admin' },
+  system:        { icon: Settings,      color: 'text-muted-foreground' },
+  notification:  { icon: AlertCircle,   color: 'text-warning' },
+};
+
+const getActivityIcon = (type: string) =>
+  ACTIVITY_ICON_MAP[type] ?? { icon: Shield, color: 'text-muted-foreground' };
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -227,26 +246,27 @@ export default function AdminDashboard() {
           {!recentActivity || recentActivity.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-4">No recent activity</p>
           ) : (
-            recentActivity.map((activity: any, index: number) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="flex items-start gap-3 text-sm"
-              >
-                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                  <UserCheck className="w-4 h-4 text-muted-foreground" />
-                </div>
-                <div>
-                  <p className="text-foreground font-medium capitalize">{activity.type}</p>
-                  <p className="text-xs text-muted-foreground">{activity.message}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {activity.time}
-                  </p>
-                </div>
-              </motion.div>
-            ))
+            recentActivity.map((activity: any, index: number) => {
+              const { icon: ActivityIcon, color } = getActivityIcon(activity.type);
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex items-start gap-3 text-sm"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 shrink-0">
+                    <ActivityIcon className={`w-4 h-4 ${color}`} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-foreground font-medium capitalize">{activity.type}</p>
+                    <p className="text-xs text-muted-foreground truncate">{activity.message}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{activity.time}</p>
+                  </div>
+                </motion.div>
+              );
+            })
           )}
         </CardContent>
       </Card>
