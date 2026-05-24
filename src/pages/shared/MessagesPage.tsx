@@ -347,7 +347,10 @@ export default function MessagesPage() {
 
   const currentThread = messageThreads.find((t) => t.id === selectedThread || (t as any)._id === selectedThread);
   const currentMessages = messages.filter(
-    (m) => m.threadId === selectedThread || (currentThread && (m.threadId === currentThread.id || m.threadId === (currentThread as any)._id))
+    (m) => {
+      if (!currentThread) return false;
+      return m.threadId === currentThread.id || m.threadId === (currentThread as any)._id;
+    }
   );
 
   return (

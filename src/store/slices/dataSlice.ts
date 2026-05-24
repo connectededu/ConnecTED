@@ -236,11 +236,16 @@ const dataSlice = createSlice({
   reducers: {
     // Socket listener actions to update state in real-time
     receiveMessage(state, action: PayloadAction<Message>) {
-      state.messages.push(action.payload)
-      const thread = state.messageThreads.find(t => t.id === action.payload.threadId)
+      // Avoid duplicate messages
+      const exists = state.messages.some(m => m.id === action.payload.id || m._id === action.payload._id);
+      if (!exists) {
+        state.messages.push(action.payload);
+      }
+      // Update thread's last message and unread count
+      const thread = state.messageThreads.find(t => t.id === action.payload.threadId || (t as any)._id === action.payload.threadId);
       if (thread) {
-        thread.lastMessage = action.payload
-        thread.unreadCount += 1
+        thread.lastMessage = action.payload;
+        thread.unreadCount = (thread.unreadCount || 0) + 1;
       }
     },
     receiveNotification(state, action: PayloadAction<Notification>) {
@@ -291,7 +296,7 @@ const dataSlice = createSlice({
         state.messageThreads = action.payload
       })
       .addCase(fetchMessages.fulfilled, (state, action) => {
-        state.messages = action.payload
+        state.messages = action.payload;
       })
       .addCase(fetchAuditLogs.fulfilled, (state, action) => {
         state.auditLogs = action.payload
@@ -306,11 +311,16 @@ const dataSlice = createSlice({
 
       // Mutations
       .addCase(sendMessageThunk.fulfilled, (state, action) => {
-        state.messages.push(action.payload)
-        const thread = state.messageThreads.find(t => t.id === action.payload.threadId)
+        // Avoid duplicate messages
+        const exists = state.messages.some(m => m.id === action.payload.id || m._id === action.payload._id);
+        if (!exists) {
+          state.messages.push(action.payload);
+        }
+        // Update thread's last message and reset unread count for sender
+        const thread = state.messageThreads.find(t => t.id === action.payload.threadId || (t as any)._id === action.payload.threadId);
         if (thread) {
-          thread.lastMessage = action.payload
-          thread.unreadCount = 0
+          thread.lastMessage = action.payload;
+          thread.unreadCount = 0;
         }
       })
       .addCase(updateRSVPThunk.fulfilled, (state, action) => {
