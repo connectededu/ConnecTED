@@ -66,7 +66,9 @@ export default function ParentDashboard() {
 			<div className='space-y-4'>
 				<div className='flex items-center justify-between'>
 					<h2 className='text-xl font-semibold text-foreground'>
-						{t('parent.myChildren')}
+						{parent.studentIds && parent.studentIds.length === 1
+							? 'My Child'
+							: 'My Children'}
 					</h2>
 					<Button
 						variant='outline'

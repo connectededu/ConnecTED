@@ -8,17 +8,21 @@ ConnecTED Frontend is a modern, responsive, and feature-rich single-page applica
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Key Features](#key-features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [Available Scripts](#available-scripts)
-- [State Management](#state-management)
-- [Routing & Access Control](#routing--access-control)
-- [Styling & UI](#styling--ui)
-- [Internationalization (i18n)](#internationalization-i18n)
+- [ConnecTED Frontend](#connected-frontend)
+  - [📋 Table of Contents](#-table-of-contents)
+  - [🎯 Overview](#-overview)
+  - [✨ Key Features](#-key-features)
+  - [🛠️ Tech Stack](#️-tech-stack)
+  - [📁 Project Structure](#-project-structure)
+  - [🚀 Getting Started](#-getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+  - [🔐 Environment Variables](#-environment-variables)
+  - [📜 Available Scripts](#-available-scripts)
+  - [🧠 State Management](#-state-management)
+  - [🛡️ Routing \& Access Control](#️-routing--access-control)
+  - [🎨 Styling \& UI](#-styling--ui)
+  - [🌍 Internationalization (i18n)](#-internationalization-i18n)
 
 ---
 
@@ -47,19 +51,19 @@ The ConnecTED frontend serves as the primary user interface for the platform, se
 
 ## 🛠️ Tech Stack
 
-| Category | Technology |
-|----------|-----------|
-| **Core** | React 18, TypeScript, Vite |
-| **Routing** | React Router DOM v6 |
-| **State Management** | Redux Toolkit, Redux Persist |
-| **Data Fetching** | React Query, Axios |
-| **Authentication** | Firebase Auth |
-| **Styling** | Tailwind CSS, Framer Motion |
-| **UI Components** | Radix UI (shadcn/ui), Lucide React |
-| **Forms** | React Hook Form, Zod |
-| **Charts** | Recharts |
-| **Real-Time** | Socket.io-client |
-| **i18n** | i18next, react-i18next |
+| Category             | Technology                         |
+| -------------------- | ---------------------------------- |
+| **Core**             | React 18, TypeScript, Vite         |
+| **Routing**          | React Router DOM v6                |
+| **State Management** | Redux Toolkit, Redux Persist       |
+| **Data Fetching**    | React Query, Axios                 |
+| **Authentication**   | Firebase Auth                      |
+| **Styling**          | Tailwind CSS, Framer Motion        |
+| **UI Components**    | Radix UI (shadcn/ui), Lucide React |
+| **Forms**            | React Hook Form, Zod               |
+| **Charts**           | Recharts                           |
+| **Real-Time**        | Socket.io-client                   |
+| **i18n**             | i18next, react-i18next             |
 
 ---
 
@@ -106,11 +110,13 @@ connected/
 ### Installation
 
 1. **Navigate to the frontend directory:**
+
    ```bash
    cd connected
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
@@ -134,7 +140,6 @@ Create a `.env.local` file in the root of the `connected` directory:
 ```env
 # API Configuration
 VITE_API_URL=http://localhost:5000/api
-VITE_SOCKET_URL=http://localhost:5000
 
 # Firebase Configuration
 VITE_FIREBASE_API_KEY=your_api_key
@@ -160,6 +165,7 @@ VITE_FIREBASE_APP_ID=your_app_id
 ## 🧠 State Management
 
 The application uses **Redux Toolkit** for global state management:
+
 - **Auth Slice**: Manages user session, tokens, and role information.
 - **UI Slice**: Manages global UI states like theme, sidebar toggles, and modals.
 - **Redux Persist**: Ensures that essential state (like authentication tokens and theme preferences) persists across page reloads.
@@ -171,6 +177,7 @@ Data fetching and caching for API requests are handled by **React Query**, provi
 ## 🛡️ Routing & Access Control
 
 Routing is protected based on authentication and user roles:
+
 1. **Public Routes:** Login, Signup, Landing page.
 2. **Protected Routes:** Require a valid Firebase session.
 3. **Role-Based Routes:** Checks the user's `role` (`admin`, `teacher`, `parent`) before granting access to specific dashboards.
@@ -180,7 +187,8 @@ Routing is protected based on authentication and user roles:
 
 ## 🎨 Styling & UI
 
-The frontend leverages **Tailwind CSS** for rapid UI development and **Radix UI** primitives (via `shadcn/ui`) for accessible, unstyled components. 
+The frontend leverages **Tailwind CSS** for rapid UI development and **Radix UI** primitives (via `shadcn/ui`) for accessible, unstyled components.
+
 - Global CSS variables are defined in `src/index.css` for theming (colors, border radius).
 - `framer-motion` is used to implement smooth page transitions and micro-interactions.
 
@@ -188,7 +196,8 @@ The frontend leverages **Tailwind CSS** for rapid UI development and **Radix UI*
 
 ## 🌍 Internationalization (i18n)
 
-The app is built to support multiple languages using `i18next`. 
+The app is built to support multiple languages using `i18next`.
+
 - Translation files are stored in `src/i18n/locales/`.
 - The active language can be toggled from the user settings/header.
 - It uses `i18next-browser-languagedetector` to automatically apply the user's preferred browser language.

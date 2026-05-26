@@ -45,7 +45,7 @@ api.interceptors.response.use(
 			// If 401 and we haven't retried yet
 			if (status === 401 && !originalRequest._retry) {
 				originalRequest._retry = true
-				
+
 				try {
 					// Force refresh Firebase token
 					const token = await getIdToken(true)
@@ -117,14 +117,22 @@ export const authApi = {
 
 	logout: () => api.post('/auth/logout'),
 
-	updateMyProfile: (data: { name?: string; phone?: string; profilePicture?: string }) =>
-		api.patch('/auth/me', data),
+	updateMyProfile: (data: {
+		name?: string
+		phone?: string
+		profilePicture?: string
+	}) => api.patch('/auth/me', data)
 }
 
 // Users API
 export const usersApi = {
-	getAll: (params?: { role?: string; isApproved?: boolean; page?: number; limit?: number; q?: string }) =>
-		api.get('/users', { params }),
+	getAll: (params?: {
+		role?: string
+		isApproved?: boolean
+		page?: number
+		limit?: number
+		q?: string
+	}) => api.get('/users', { params }),
 
 	getById: (id: string) => api.get(`/users/${id}`),
 
@@ -205,20 +213,28 @@ export const emailApi = {
 
 // Announcements API
 export const announcementsApi = {
-	getAll: (params?: { targetAudience?: string; classId?: string; limit?: number; offset?: number; status?: string }) =>
-		api.get('/announcements', { params }),
+	getAll: (params?: {
+		targetAudience?: string
+		classId?: string
+		limit?: number
+		offset?: number
+		status?: string
+	}) => api.get('/announcements', { params }),
 	getById: (id: string) => api.get(`/announcements/${id}`),
 	create: (data: any) => api.post('/announcements', data),
 	update: (id: string, data: any) => api.put(`/announcements/${id}`, data),
 	delete: (id: string) => api.delete(`/announcements/${id}`),
 	archive: (id: string) => api.patch(`/announcements/${id}/archive`),
-	restore: (id: string) => api.patch(`/announcements/${id}/restore`),
+	restore: (id: string) => api.patch(`/announcements/${id}/restore`)
 }
 
 // Events API
 export const eventsApi = {
-	getAll: (params?: { targetAudience?: string; upcoming?: boolean; status?: string }) =>
-		api.get('/events', { params }),
+	getAll: (params?: {
+		targetAudience?: string
+		upcoming?: boolean
+		status?: string
+	}) => api.get('/events', { params }),
 	getById: (id: string) => api.get(`/events/${id}`),
 	create: (data: any) => api.post('/events', data),
 	update: (id: string, data: any) => api.put(`/events/${id}`, data),
@@ -226,13 +242,18 @@ export const eventsApi = {
 	rsvp: (id: string, status: 'attending' | 'not_attending') =>
 		api.post(`/events/${id}/rsvp`, { status }),
 	archive: (id: string) => api.patch(`/events/${id}/archive`),
-	restore: (id: string) => api.patch(`/events/${id}/restore`),
+	restore: (id: string) => api.patch(`/events/${id}/restore`)
 }
 
 // Attendance API
 export const attendanceApi = {
-	get: (params?: { classId?: string; studentId?: string; date?: string; startDate?: string; endDate?: string }) =>
-		api.get('/attendance', { params }),
+	get: (params?: {
+		classId?: string
+		studentId?: string
+		date?: string
+		startDate?: string
+		endDate?: string
+	}) => api.get('/attendance', { params }),
 	mark: (records: any[]) => api.post('/attendance', { records }),
 	update: (id: string, updates: any) => api.put(`/attendance/${id}`, updates),
 	getSummary: (studentId: string) => api.get(`/attendance/student/${studentId}`)
@@ -240,8 +261,13 @@ export const attendanceApi = {
 
 // Grades API
 export const gradesApi = {
-	getAll: (params?: { classId?: string; studentId?: string; subject?: string; term?: string; teacherId?: string }) =>
-		api.get('/grades', { params }),
+	getAll: (params?: {
+		classId?: string
+		studentId?: string
+		subject?: string
+		term?: string
+		teacherId?: string
+	}) => api.get('/grades', { params }),
 	create: (data: any) => api.post('/grades', data),
 	update: (id: string, data: any) => api.put(`/grades/${id}`, data),
 	delete: (id: string) => api.delete(`/grades/${id}`),
@@ -250,8 +276,11 @@ export const gradesApi = {
 
 // Homework API
 export const homeworkApi = {
-	getAll: (params?: { classId?: string; teacherId?: string; subject?: string }) =>
-		api.get('/homework', { params }),
+	getAll: (params?: {
+		classId?: string
+		teacherId?: string
+		subject?: string
+	}) => api.get('/homework', { params }),
 	getById: (id: string) => api.get(`/homework/${id}`),
 	create: (data: any) => api.post('/homework', data),
 	update: (id: string, data: any) => api.put(`/homework/${id}`, data),
@@ -261,13 +290,27 @@ export const homeworkApi = {
 // Messages API
 export const messagesApi = {
 	getThreads: () => api.get('/messages/threads'),
-	getOrCreateThread: (participantId: string, studentId: string, participantRole?: string) =>
-		api.post('/messages/threads', { participantId, studentId, participantRole }),
-	getMessages: (threadId: string, params?: { limit?: number; offset?: number }) =>
-		api.get(`/messages/threads/${threadId}/messages`, { params }),
+	getOrCreateThread: (
+		participantId: string,
+		studentId: string,
+		participantRole?: string
+	) =>
+		api.post('/messages/threads', {
+			participantId,
+			studentId,
+			participantRole
+		}),
+	getMessages: (
+		threadId: string,
+		params?: { limit?: number; offset?: number }
+	) => api.get(`/messages/threads/${threadId}/messages`, { params }),
 	sendMessage: (threadId: string, content: string, attachments?: any[]) =>
-		api.post(`/messages/threads/${threadId}/messages`, { content, attachments }),
-	markRead: (threadId: string) => api.patch(`/messages/threads/${threadId}/read`)
+		api.post(`/messages/threads/${threadId}/messages`, {
+			content,
+			attachments
+		}),
+	markRead: (threadId: string) =>
+		api.patch(`/messages/threads/${threadId}/read`)
 }
 
 // Analytics API
@@ -282,17 +325,32 @@ export const programsApi = {
 	create: (data: any) => api.post('/programs', data),
 	update: (id: string, data: any) => api.put(`/programs/${id}`, data),
 	delete: (id: string) => api.delete(`/programs/${id}`),
-	getSubjects: (q?: string) => api.get(`/programs/subjects`, { params: { q, limit: 5 } }),
+	getSubjects: (q?: string) =>
+		api.get(`/programs/subjects`, { params: { q, limit: 5 } })
 }
 
 // Subject Groups API
 export const subjectGroupsApi = {
 	getAll: () => api.get('/subject-groups'),
 	getById: (id: string) => api.get(`/subject-groups/${id}`),
-	create: (data: { name: string; subjects: string[] }) => api.post('/subject-groups', data),
-	update: (id: string, data: { name: string; subjects: string[] }) => api.put(`/subject-groups/${id}`, data),
-	delete: (id: string) => api.delete(`/subject-groups/${id}`),
+	create: (data: { name: string; subjects: string[] }) =>
+		api.post('/subject-groups', data),
+	update: (id: string, data: { name: string; subjects: string[] }) =>
+		api.put(`/subject-groups/${id}`, data),
+	delete: (id: string) => api.delete(`/subject-groups/${id}`)
+}
+
+// Upload API
+export const uploadApi = {
+	uploadFile: (file: File) => {
+		const formData = new FormData()
+		formData.append('file', file)
+		return api.post('/upload', formData, {
+			headers: {
+				'Content-Type': 'multipart/form-data'
+			}
+		})
+	}
 }
 
 export default api
-

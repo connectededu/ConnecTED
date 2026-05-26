@@ -15,7 +15,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { toast } from 'sonner'
 import type { ParentSignupForm as ParentFormType } from '@/types'
 import { useQuery } from '@tanstack/react-query'
-import { programsApi } from '@/services/api'
+import { classesApi } from '@/services/api'
 
 interface Props {
 	onSuccess: () => void
@@ -35,16 +35,15 @@ export default function ParentSignupForm({ onSuccess }: Props) {
 		studentDob: '',
 		studentAdmissionNumber: '',
 		studentClass: '',
-		studentProgramId: '',
 		previousSchool: '',
 		emergencyContactName: '',
 		emergencyContactPhone: '',
 		emergencyContactRelationship: ''
 	})
 
-	const { data: programs = [] } = useQuery({
-		queryKey: ['programs-list'],
-		queryFn: () => programsApi.getAll().then(r => r.data.data)
+	const { data: classes = [] } = useQuery({
+		queryKey: ['classes-list'],
+		queryFn: () => classesApi.getAll().then(r => r.data)
 	})
 
 	const updateField = (field: keyof ParentFormType, value: string) => {
@@ -250,25 +249,9 @@ export default function ParentSignupForm({ onSuccess }: Props) {
 								</SelectTrigger>
 								<SelectContent>
 									<SelectItem value='awaiting'>Awaiting Assignment</SelectItem>
-									<SelectItem value='class-1'>Grade 5 Blue</SelectItem>
-									<SelectItem value='class-2'>Grade 3 Green</SelectItem>
-									<SelectItem value='class-3'>Grade 4 Red</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
-						<div className='space-y-2'>
-							<Label>Program</Label>
-							<Select
-								value={formData.studentProgramId}
-								onValueChange={(value) => updateField('studentProgramId', value)}
-							>
-								<SelectTrigger>
-									<SelectValue placeholder='Select a program' />
-								</SelectTrigger>
-								<SelectContent>
-									{programs.map((prog: any) => (
-										<SelectItem key={prog._id || prog.id} value={prog._id || prog.id}>
-											{prog.name}
+									{classes.map((cls: any) => (
+										<SelectItem key={cls._id || cls.id} value={cls._id || cls.id}>
+											{cls.name}
 										</SelectItem>
 									))}
 								</SelectContent>

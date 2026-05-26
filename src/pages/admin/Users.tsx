@@ -209,7 +209,6 @@ const studentSchema = z.object({
 	name: z.string().min(2, 'Name is required'),
 	dateOfBirth: z.string().min(1, 'DOB is required'),
 	classId: z.string().min(1, 'Class is required'),
-	programId: z.string().optional(),
 	admissionNumber: z.string().optional()
 })
 
@@ -336,28 +335,6 @@ function SubjectSearchDropdown({ value, onChange }: { value: string[], onChange:
 				)}
 			</div>
 		</div>
-	)
-}
-
-function ProgramSearchDropdown({ value, onChange }: { value: string, onChange: (val: string) => void }) {
-	const { data: programs } = useQuery({
-		queryKey: ['admin-programs-list'],
-		queryFn: () => programsApi.getAll().then(r => r.data.data),
-	})
-
-	return (
-		<Select value={value} onValueChange={onChange}>
-			<SelectTrigger>
-				<SelectValue placeholder="Select program" />
-			</SelectTrigger>
-			<SelectContent>
-				{programs?.map((prog: any) => (
-					<SelectItem key={prog._id || prog.id} value={prog._id || prog.id}>
-						{prog.name}
-					</SelectItem>
-				))}
-			</SelectContent>
-		</Select>
 	)
 }
 
@@ -861,21 +838,6 @@ export default function UsersPage() {
 																	<FormControl>
 																		<ClassSearchDropdown 
 																			value={field.value} 
-																			onChange={field.onChange} 
-																		/>
-																	</FormControl>
-																	<FormMessage />
-																</FormItem>
-															)}
-														/>
-														<FormField
-															control={form.control}
-															name={`newStudents.${index}.programId`}
-															render={({ field }) => (
-																<FormItem>
-																	<FormControl>
-																		<ProgramSearchDropdown 
-																			value={field.value || ''} 
 																			onChange={field.onChange} 
 																		/>
 																	</FormControl>

@@ -34,7 +34,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { studentsApi, classesApi, programsApi } from '@/services/api';
+import { studentsApi, classesApi } from '@/services/api';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -42,7 +42,6 @@ const studentSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   admissionNumber: z.string().min(1, "Admission Number is required"),
   classId: z.string().min(1, "Class is required"),
-  programId: z.string().optional(),
   dateOfBirth: z.string().min(1, "Date of Birth is required"),
 });
 
@@ -62,7 +61,6 @@ export default function StudentsPage() {
       name: '',
       admissionNumber: '',
       classId: '',
-      programId: '',
       dateOfBirth: '',
     },
   });
@@ -75,11 +73,6 @@ export default function StudentsPage() {
   const { data: classes } = useQuery({
     queryKey: ['admin-classes'],
     queryFn: () => classesApi.getAll().then(r => r.data),
-  });
-
-  const { data: programs } = useQuery({
-    queryKey: ['admin-programs'],
-    queryFn: () => programsApi.getAll().then(r => r.data.data),
   });
 
   const createMutation = useMutation({
@@ -138,7 +131,6 @@ export default function StudentsPage() {
       name: student.name,
       admissionNumber: student.admissionNumber,
       classId: student.classId,
-      programId: student.programId || '',
       dateOfBirth: student.dateOfBirth ? student.dateOfBirth.split('T')[0] : '',
     });
     setIsDialogOpen(true);
@@ -150,7 +142,6 @@ export default function StudentsPage() {
       name: '',
       admissionNumber: '',
       classId: '',
-      programId: '',
       dateOfBirth: '',
     });
     setIsDialogOpen(true);
@@ -235,28 +226,6 @@ export default function StudentsPage() {
                       <SelectContent>
                         {classes?.map(cls => (
                            <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="programId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Program</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select program" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {programs?.map((prog: any) => (
-                           <SelectItem key={prog._id || prog.id} value={prog._id || prog.id}>{prog.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>

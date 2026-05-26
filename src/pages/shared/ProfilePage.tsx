@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
+import {
   Camera, Loader2, Mail, Phone, Lock, User as UserIcon,
   CheckCircle2, AlertCircle, RefreshCw
 } from 'lucide-react';
@@ -12,15 +12,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useAuthStore } from '@/stores/authStore';
 import { toast } from 'sonner';
-import { authApi } from '@/services/api';
-import { 
-  getAuth, 
-  updatePassword, 
-  reauthenticateWithCredential, 
+import { authApi, uploadApi } from '@/services/api';
+import {
+  getAuth,
+  updatePassword,
+  reauthenticateWithCredential,
   EmailAuthProvider,
   sendEmailVerification,
   onAuthStateChanged,
-  type User as FirebaseUser 
+  type User as FirebaseUser
 } from 'firebase/auth';
 
 export default function ProfilePage() {
@@ -41,6 +41,7 @@ export default function ProfilePage() {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [emailVerified, setEmailVerified] = useState(false);
   const [verifyingSending, setVerifyingSending] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   // Track Firebase auth state for email verification
   useEffect(() => {
@@ -65,20 +66,26 @@ export default function ProfilePage() {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const base64 = e.target?.result as string;
-      // Update in local store immediately
-      updateAvatar(base64);
-      // Persist to backend via auth/me
-      try {
-        await authApi.updateMyProfile({ profilePicture: base64 });
+    setIsUploadingImage(true);
+    uploadApi
+      .uploadFile(file)
+      .then((response) => {
+        const imageUrl = response.data.url;
+        // Update in local store immediately
+        updateAvatar(imageUrl);
+        // Persist to backend via auth/me
+        return authApi.updateMyProfile({ profilePicture: imageUrl });
+      })
+      .then(() => {
         toast.success('Profile photo updated!');
-      } catch {
-        toast.error('Failed to save photo to server');
-      }
-    };
-    reader.readAsDataURL(file);
+      })
+      .catch((error) => {
+        console.error('Image upload error:', error);
+        toast.error('Failed to upload photo');
+      })
+      .finally(() => {
+        setIsUploadingImage(false);
+      });
   }, [updateAvatar, user]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -203,12 +210,17 @@ export default function ProfilePage() {
                   </AvatarFallback>
                 </Avatar>
                 <label className="absolute inset-0 flex items-center justify-center bg-foreground/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                  <Camera className="w-6 h-6 text-white" />
+                  {isUploadingImage ? (
+                    <Loader2 className="w-6 h-6 text-white animate-spin" />
+                  ) : (
+                    <Camera className="w-6 h-6 text-white" />
+                  )}
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleFileSelect}
                     className="hidden"
+                    disabled={isUploadingImage}
                   />
                 </label>
               </div>

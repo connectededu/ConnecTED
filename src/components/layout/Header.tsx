@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Menu, X, GraduationCap } from 'lucide-react'
 import { useAppStore } from '@/stores/appStore'
+import { ThemeSwitcher } from '@/components/shared/ThemeSwitcher'
 
 const Header = () => {
 	// const [sidebarOpen, setIsMenuOpen] = useState(false);
@@ -44,6 +45,7 @@ const Header = () => {
 
 					{/* Desktop CTA */}
 					<div className='hidden md:flex items-center gap-3'>
+						<ThemeSwitcher />
 						<Button variant='ghost' size='sm' asChild>
 							<Link to='/auth'>Sign In</Link>
 						</Button>
@@ -81,6 +83,10 @@ const Header = () => {
 								</a>
 							))}
 							<div className='flex flex-col gap-2 mt-4 px-4'>
+								<div className='flex items-center gap-2 pb-2 border-b'>
+									<ThemeSwitcher />
+									<span className='text-xs text-muted-foreground'>Theme</span>
+								</div>
 								<Button variant='outline' className='w-full' asChild>
 									<Link to='/auth'>Sign In</Link>
 								</Button>
