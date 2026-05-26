@@ -128,6 +128,7 @@ export interface Announcement {
 	authorRole: UserRole
 	targetAudience: 'all' | 'parents' | 'teachers' | 'class'
 	targetClassIds?: string[]
+	targetStudentIds?: string[]
 	attachments: Attachment[]
 	publishedAt: string
 	image?: string

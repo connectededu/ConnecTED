@@ -44,6 +44,7 @@ const eventSchema = z.object({
   location: z.string().min(2, "Location is required"),
   targetAudience: z.enum(['all', 'parents', 'teachers', 'class']),
   image: z.string().optional(),
+  targetClassIds: z.array(z.string()).optional(),
 });
 
 type EventFormValues = z.infer<typeof eventSchema>;
@@ -56,6 +57,7 @@ export default function EventsPage() {
   const [eventToDelete, setEventToDelete] = useState<string | null>(null);
   const [optimisticRSVPs, setOptimisticRSVPs] = useState<Record<string, 'attending' | 'not_attending'>>({});
   const [showArchived, setShowArchived] = useState(false);
+  const { classes } = useAppStore();
 
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventSchema),
@@ -67,8 +69,11 @@ export default function EventsPage() {
       location: '',
       targetAudience: 'all',
       image: '',
+      targetClassIds: [],
     },
   });
+
+  const selectedAudience = form.watch('targetAudience');
 
   const handleRSVP = async (eventId: string, status: 'attending' | 'not_attending') => {
     if (!user) return;
@@ -106,6 +111,7 @@ export default function EventsPage() {
         targetAudience: data.targetAudience,
         image: data.image,
         createdBy: user?.id || 'admin-1',
+        targetClassIds: data.targetAudience === 'class' ? data.targetClassIds : [],
         rsvps: editingEvent ? editingEvent.rsvps : [],
       };
 
@@ -133,6 +139,7 @@ export default function EventsPage() {
       location: event.location,
       targetAudience: event.targetAudience,
       image: event.image || '',
+      targetClassIds: event.targetClassIds || [],
     });
     setIsDialogOpen(true);
   };
@@ -174,6 +181,7 @@ export default function EventsPage() {
       location: '',
       targetAudience: 'all',
       image: '',
+      targetClassIds: [],
     });
     setIsDialogOpen(true);
   };
@@ -300,6 +308,35 @@ export default function EventsPage() {
                   </FormItem>
                 )}
               />
+              {selectedAudience === 'class' && (
+                <FormField
+                  control={form.control}
+                  name="targetClassIds"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Select Class</FormLabel>
+                      <Select
+                        onValueChange={(val) => field.onChange([val])}
+                        defaultValue={field.value?.[0]}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select class" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {classes.map((c) => (
+                            <SelectItem key={c.id || (c as any)._id} value={c.id || (c as any)._id}>
+                              {c.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               <FormField
                 control={form.control}
                 name="description"

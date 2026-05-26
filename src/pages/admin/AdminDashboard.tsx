@@ -42,6 +42,27 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchAnalytics();
+
+    const handleUpdate = () => {
+      fetchAnalytics();
+    };
+
+    import('@/services/socket').then((module) => {
+      const socketService = module.default;
+      socketService.on('audit:new', handleUpdate);
+      socketService.on('analytics_update', handleUpdate);
+      
+      // We can't return cleanup easily from inside the promise, 
+      // but useEffect cleanup works if we track it
+    });
+
+    return () => {
+      import('@/services/socket').then((module) => {
+        const socketService = module.default;
+        socketService.off('audit:new', handleUpdate);
+        socketService.off('analytics_update', handleUpdate);
+      });
+    };
   }, []);
 
   // Still fetch the pending approvals details list using query, but stats come from analytics

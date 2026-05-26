@@ -51,6 +51,7 @@ import {
 	rejectUserThunk,
 	markNotificationReadThunk,
 	markAllNotificationsReadThunk,
+	markThreadAsRead,
 	receiveNotification,
 	receiveMessage,
 	receiveAnnouncement,
@@ -135,6 +136,10 @@ export const useAppStore = () => {
 		markMessageRead: (messageId: string) => {
 			// Backend auto-reads on fetch/open thread, or update thunk
 		},
+		
+		markThreadAsRead: (threadId: string) => {
+			dispatch(markThreadAsRead(threadId));
+		},
 
 		// --- EVENT & STUDENT ACTIONS ---
 		updateRSVP: (
@@ -171,7 +176,8 @@ export const useAppStore = () => {
 				title: update.title,
 				content: update.content,
 				targetAudience: 'class',
-				targetClassIds: [update.classId]
+				targetClassIds: [update.classId],
+				targetStudentIds: update.studentId ? [update.studentId] : []
 			}))
 		},
 

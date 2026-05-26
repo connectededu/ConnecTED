@@ -1035,7 +1035,12 @@ export default function UsersPage() {
 								<TableRow key={user._id}>
 									<TableCell>
 										<div className='flex flex-col'>
-											<span className='font-medium'>{user.name}</span>
+											<div className="flex items-center gap-2">
+												<span className='font-medium'>{user.name}</span>
+												{user.isOnline && (
+													<span className="w-2 h-2 rounded-full bg-green-500" title="Online"></span>
+												)}
+											</div>
 											<span className='text-xs text-muted-foreground'>
 												{user.email}
 											</span>

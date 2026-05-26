@@ -47,6 +47,7 @@ export default function MessagesPage() {
     fetchClasses,
     fetchMessageThreads,
     sendMessage,
+    markThreadAsRead,
     isLoading: dataLoading,
   } = useAppStore();
 
@@ -75,6 +76,7 @@ export default function MessagesPage() {
       fetchMessages(selectedThread);
       // Mark thread as read when opened
       messagesApi.markRead(selectedThread).catch(() => {});
+      markThreadAsRead(selectedThread);
       setTypingUsers([]); // reset typing users on thread switch
       // Join thread room for real-time events
       socketService.joinThread(selectedThread);
@@ -165,7 +167,7 @@ export default function MessagesPage() {
     return (teachers as any[]).filter((teacher) =>
       myChildren.some((child) => {
         const cls = classes.find(
-          (c) => c.id === child.classId || c._id === child.classId
+          (c) => c.id === child.classId || (c as any)._id === child.classId
         );
         return (
           cls?.teacherIds?.includes(teacher.id) ||
@@ -190,7 +192,7 @@ export default function MessagesPage() {
     () =>
       students.filter((s) =>
         myClasses.some(
-          (c) => c.id === s.classId || c._id === s.classId
+          (c) => c.id === s.classId || (c as any)._id === s.classId
         )
       ),
     [students, myClasses]
@@ -516,7 +518,7 @@ export default function MessagesPage() {
                         const child = myChildren.find((c) => {
                           const cls = classes.find(
                             (cl) =>
-                              cl.id === c.classId || cl._id === c.classId
+                              cl.id === c.classId || (cl as any)._id === c.classId
                           );
                           return (
                             cls?.teacherIds?.includes(teacher.id) ||

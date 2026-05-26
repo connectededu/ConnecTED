@@ -250,7 +250,7 @@ export default function UpdatesPage() {
 									)}
 								/>
 
-								<div className='grid grid-cols-2 gap-4'>
+								<div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
 									<FormField
 										control={form.control}
 										name='type'
@@ -442,10 +442,11 @@ export default function UpdatesPage() {
 									</div>
 								</CardContent>
 								{/* Fix U2: Wire up Edit and Delete buttons */}
-								<CardFooter className='pt-0 flex justify-end gap-2'>
+								<CardFooter className='pt-0 flex flex-col sm:flex-row justify-end gap-2'>
 									<Button
 										variant='ghost'
 										size='sm'
+										className='w-full sm:w-auto'
 										onClick={() => handleEdit(update)}
 									>
 										<Edit className='h-4 w-4 mr-1' /> Edit
@@ -453,7 +454,7 @@ export default function UpdatesPage() {
 									<Button
 										variant='ghost'
 										size='sm'
-										className='text-destructive hover:text-destructive'
+										className='w-full sm:w-auto text-destructive hover:text-destructive'
 										onClick={() => handleDelete(update.id)}
 									>
 										<Trash2 className='h-4 w-4 mr-1' /> Delete

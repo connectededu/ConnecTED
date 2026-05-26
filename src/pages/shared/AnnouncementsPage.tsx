@@ -42,6 +42,7 @@ const announcementSchema = z.object({
   content: z.string().min(10, "Content must be at least 10 characters"),
   targetAudience: z.enum(['all', 'parents', 'teachers', 'class']),
   image: z.string().optional(),
+  targetClassIds: z.array(z.string()).optional(),
 });
 
 type AnnouncementFormValues = z.infer<typeof announcementSchema>;
@@ -53,6 +54,7 @@ export default function AnnouncementsPage() {
   const [editingAnnouncement, setEditingAnnouncement] = useState<any>(null);
   const [announcementToDelete, setAnnouncementToDelete] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
+  const { classes } = useAppStore();
 
   const form = useForm<AnnouncementFormValues>({
     resolver: zodResolver(announcementSchema),
@@ -61,8 +63,11 @@ export default function AnnouncementsPage() {
       content: '',
       targetAudience: 'all',
       image: '',
+      targetClassIds: [],
     },
   });
+
+  const selectedAudience = form.watch('targetAudience');
 
   const onSubmit = async (data: AnnouncementFormValues) => {
     try {
@@ -73,6 +78,7 @@ export default function AnnouncementsPage() {
         image: data.image,
         authorId: user?.id || (user as any)?._id,
         authorRole: user?.role,
+        targetClassIds: data.targetAudience === 'class' ? data.targetClassIds : [],
         attachments: editingAnnouncement ? editingAnnouncement.attachments : [],
       };
 
@@ -97,6 +103,7 @@ export default function AnnouncementsPage() {
       content: announcement.content,
       targetAudience: announcement.targetAudience,
       image: announcement.image || '',
+      targetClassIds: announcement.targetClassIds || [],
     });
     setIsDialogOpen(true);
   };
@@ -137,6 +144,7 @@ export default function AnnouncementsPage() {
       content: '',
       targetAudience: 'all',
       image: '',
+      targetClassIds: [],
     });
     setIsDialogOpen(true);
   };
@@ -223,6 +231,35 @@ export default function AnnouncementsPage() {
                   </FormItem>
                 )}
               />
+              {selectedAudience === 'class' && (
+                <FormField
+                  control={form.control}
+                  name="targetClassIds"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Select Class</FormLabel>
+                      <Select
+                        onValueChange={(val) => field.onChange([val])}
+                        defaultValue={field.value?.[0]}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select class" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {classes.map((c) => (
+                            <SelectItem key={c.id || (c as any)._id} value={c.id || (c as any)._id}>
+                              {c.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               <FormField
                 control={form.control}
                 name="content"

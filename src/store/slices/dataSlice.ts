@@ -252,8 +252,17 @@ const dataSlice = createSlice({
       console.log('🔍 Found thread:', thread ? `${thread.id || (thread as any)._id}` : 'NOT FOUND');
       if (thread) {
         thread.lastMessage = action.payload;
-        thread.unreadCount = (thread.unreadCount || 0) + 1;
-        console.log('✅ Updated thread, unreadCount:', thread.unreadCount);
+        // Only increment unread if we didn't just send it
+        if (action.payload.senderId !== (state as any).userId) {
+          thread.unreadCount = (thread.unreadCount || 0) + 1;
+          console.log('✅ Updated thread, unreadCount:', thread.unreadCount);
+        }
+      }
+    },
+    markThreadAsRead(state, action: PayloadAction<string>) {
+      const thread = state.messageThreads.find(t => t.id === action.payload || (t as any)._id === action.payload);
+      if (thread) {
+        thread.unreadCount = 0;
       }
     },
     receiveNotification(state, action: PayloadAction<Notification>) {
@@ -395,7 +404,11 @@ const dataSlice = createSlice({
         state.announcements = state.announcements.filter(a => a.id !== action.payload && a._id !== action.payload)
       })
       .addCase(addEventThunk.fulfilled, (state, action) => {
-        state.events.push(action.payload)
+        const exists = state.events.some(e => e.id === action.payload.id || e._id === action.payload._id);
+        if (!exists) {
+          state.events.push(action.payload)
+          state.events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        }
       })
       .addCase(updateEventThunk.fulfilled, (state, action) => {
         const idx = state.events.findIndex(e => e.id === action.payload.id || e._id === action.payload._id)
@@ -418,5 +431,5 @@ const dataSlice = createSlice({
   }
 })
 
-export const { receiveMessage, receiveNotification, receiveAnnouncement, receiveEvent } = dataSlice.actions
+export const { receiveMessage, markThreadAsRead, receiveNotification, receiveAnnouncement, receiveEvent } = dataSlice.actions
 export default dataSlice.reducer
