@@ -9,8 +9,7 @@ export default defineConfig({
 		port: 8080,
 		hmr: {
 			overlay: false
-		},
-		historyApiFallback: true
+		}
 	},
 	plugins: [react()],
 	resolve: {
