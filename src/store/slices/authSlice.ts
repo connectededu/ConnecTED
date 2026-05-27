@@ -215,7 +215,8 @@ export const initializeAuth = createAsyncThunk(
 
 					try {
 						// Ensure secure cookie session is synchronized on refresh
-						const token = await getIdToken()
+						// Use forceRefresh=true so the token is always < 5 minutes old for the backend
+						const token = await getIdToken(true)
 						if (token) {
 							await authApi.createSession(token)
 						}

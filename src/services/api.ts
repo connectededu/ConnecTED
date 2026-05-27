@@ -51,10 +51,10 @@ api.interceptors.response.use(
 					const token = await getIdToken(true)
 					if (token) {
 						originalRequest.headers.Authorization = `Bearer ${token}`
-						return api(originalRequest)
+						return await api(originalRequest)
 					}
 				} catch (refreshError) {
-					console.error('Token refresh failed:', refreshError)
+					console.error('Token refresh or retry failed:', refreshError)
 				}
 
 				// If refresh fails or no token, logout
