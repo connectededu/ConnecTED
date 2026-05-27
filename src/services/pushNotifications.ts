@@ -44,8 +44,12 @@ export const getFCMToken = async (): Promise<string | null> => {
 		const msg = await initializeMessaging()
 		if (!msg) return null
 
+		// Ensure we use our custom service worker, not the default /firebase-messaging-sw.js
+		const registration = await navigator.serviceWorker.ready
+
 		const token = await getToken(msg, {
-			vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY
+			vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
+			serviceWorkerRegistration: registration
 		})
 
 		return token || null
