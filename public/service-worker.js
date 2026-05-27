@@ -1,5 +1,5 @@
-importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app.compat.js')
-importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js')
+importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js')
+importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js')
 
 // Initialize Firebase in service worker
 firebase.initializeApp({
@@ -15,7 +15,6 @@ const messaging = firebase.messaging()
 
 // Handle background messages
 messaging.onBackgroundMessage((payload) => {
-	console.log('Background message received:', payload)
 
 	const notificationTitle = payload.notification?.title || 'ConnecTED Notification'
 	const notificationOptions = {

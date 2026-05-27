@@ -8,17 +8,27 @@ import {
 	PAUSE,
 	PERSIST,
 	PURGE,
-	REGISTER
+	REGISTER,
+	createTransform
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import rootReducerObject from './rootReducer'
 
 const rootReducer = combineReducers(rootReducerObject)
 
+const authTransform = createTransform(
+	null,
+	(outboundState: any) => {
+		return { ...outboundState, isInitialized: false, isLoading: false, error: null }
+	},
+	{ whitelist: ['auth'] }
+)
+
 const persistConfig = {
 	key: 'root',
 	storage,
-	whitelist: ['auth']
+	whitelist: ['auth'],
+	transforms: [authTransform]
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
