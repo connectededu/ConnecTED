@@ -39,11 +39,16 @@ export default function NotificationPanel({ isOpen, onClose }: Props) {
   const handleNotificationClick = (notification: any) => {
     if (!notification.isRead) {
       markNotificationRead(notification.id);
+      
+      // Optimistically update the store if possible
+      const stateItem = notifications.find(n => n.id === notification.id);
+      if (stateItem) stateItem.isRead = true;
     }
     if (notification.link) {
       navigate(notification.link);
-      onClose();
     }
+    // Always close on click
+    onClose();
   };
 
   return (

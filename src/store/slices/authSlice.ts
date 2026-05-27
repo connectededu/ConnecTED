@@ -348,8 +348,10 @@ const authSlice = createSlice({
 				state.error = action.payload as string
 			})
 			.addCase('persist/REHYDRATE', (state) => {
+				// Always re-check auth on refresh; don't trust the persisted isInitialized
 				state.isLoading = false
 				state.error = null
+				state.isInitialized = false
 			})
 	}
 })

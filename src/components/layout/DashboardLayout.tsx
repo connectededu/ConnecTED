@@ -390,6 +390,7 @@ export default function DashboardLayout() {
 						</h2>
 					</div>
 					<div className='flex items-center gap-4'>
+						<ThemeSwitcher />
 						<LanguageSwitcher />
 						<Button
 							variant='ghost'
